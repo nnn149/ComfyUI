@@ -358,6 +358,7 @@ def execute(server, dynprompt, caches, current_item, extra_data, executed, promp
                     return block
             def pre_execute_cb(call_index):
                 GraphBuilder.set_default_prefix(unique_id, call_index, 0)
+            obj.token_info=extra_data.get("token_info",None)
             output_data, output_ui, has_subgraph = get_output_data(obj, input_data_all, execution_block_cb=execution_block_cb, pre_execute_cb=pre_execute_cb)
         if len(output_ui) > 0:
             caches.ui.set(unique_id, {
