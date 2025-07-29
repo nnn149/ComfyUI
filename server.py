@@ -685,7 +685,33 @@ class PromptServer():
                 extra_data = {}
                 if "extra_data" in json_data:
                     extra_data = json_data["extra_data"]
-
+                # 新增：将cookie信息添加到extra_data
+                if request.cookies:
+                    # 解析comfyui_token JWT payload
+                    if "comfyui_token" in request.cookies:
+                        try:
+                            jwt_token = request.cookies["comfyui_token"]
+                            # JWT格式: header.payload.signature
+                            parts = jwt_token.split('.')
+                            if len(parts) == 3:
+                                # 获取payload部分（第二部分）
+                                payload_b64 = parts[1]
+                                # 添加padding（=）如果需要
+                                padding = 4 - len(payload_b64) % 4
+                                if padding != 4:
+                                    payload_b64 += '=' * padding
+                                # Base64解码
+                                import base64
+                                payload_json = base64.urlsafe_b64decode(payload_b64).decode('utf-8')
+                                # 解析JSON
+                                import json
+                                payload_data = json.loads(payload_json)
+                                extra_data["token_info"] = payload_data
+                            else:
+                                logging.warning("Invalid JWT token format")
+                        except Exception as e:
+                            logging.warning(f"Failed to parse JWT token: {e}")
+                            extra_data["token_info"] = None
                 if "client_id" in json_data:
                     extra_data["client_id"] = json_data["client_id"]
                 if valid[0]:
