@@ -1582,7 +1582,7 @@ class SaveImage:
     DESCRIPTION = "Saves the input images to your ComfyUI output directory."
 
     def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
-        if(self.token_info is not None):
+        if(hasattr(self, 'token_info') and self.token_info is not None):
             from datetime import datetime
             current_date = datetime.now().strftime('%Y-%m-%d')
             filename_prefix=self.token_info['UserLoginId']+'/'+current_date+'/'+filename_prefix
